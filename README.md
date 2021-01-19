@@ -7,7 +7,7 @@ Most everything is done through the `data_file` class. This will take in an .dat
 
 A minimum running script can be executed with:
 ```bash
-python data_file.py <path/to/.datfile>
+python main.py <path/to/datfile>
 ```
 
 Histograms and such are generated in the jupyter scripts.
