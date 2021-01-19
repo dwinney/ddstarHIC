@@ -6,8 +6,7 @@
 # ---------------------------------------------------------------------------
 
 import sys, math
-from histograms import make_histograms
-from data_file import create_data_file
+from data_file import data_file
 try:
     import ROOT
 except:
@@ -16,8 +15,6 @@ try:
     import numpy as np
 except:
     exit()
-
-from data_file import data_file
 
 def main(argv):
     if len(argv) == 0:
@@ -31,8 +28,7 @@ def main(argv):
         s = float(argv[1]) 
     
     outfilename = infilename.replace('.dat', '.root')
-    file = create_data_file(s, infilename, outfilename)
-    # make_histograms(file)
-    file.Close()
+    file = data_file(s, infilename, outfilename)
+    file.close()
 
 main(sys.argv[1:])
