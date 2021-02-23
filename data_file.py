@@ -23,7 +23,7 @@ masses = [mD, mDstar]
 class data_file:
     # constructor 
     # intialize all the data that will be filled into the root tree later
-    def __init__(self, _collision_energy, _datfilename, _outfilename):
+    def __init__(self, _collision_energy, _datfilenames, _outfilename):
         self.s = _collision_energy
         self.outfile = ROOT.TFile( _outfilename, 'RECREATE')
 
@@ -42,7 +42,7 @@ class data_file:
         self.cm_D_pos     = np.empty((4,1), dtype='float32')
         self.cm_Dstar_pos = np.empty((4,1), dtype='float32')
         
-        self.import_data(_datfilename)
+        self.import_data(_datfilenames)
         self.process_data()
     
     # These branches come from the inital raw data file so they're the same everywhere
@@ -69,52 +69,68 @@ class data_file:
         return
 
     # Parse .dat file and import it to the pre-setup branches
-    def import_data(self, datfilename):
+    def import_data(self, listfiles):
         # ROOT structures
         tree_raw = ROOT.TTree("raw_data", "raw_data")
         self.setup_base_branches(tree_raw)
 
-        datfile = open(datfilename)
-        lines = datfile.readlines()
-        for line in lines:
+        for file in listfiles:
+            datfile = open(file)
+            lines = datfile.readlines()
+            for line in lines:
 
-            # convert ascii to doubles
-            line_processed = self.process_line(line)
-            D, Dstar = line_processed[0], line_processed[1]
+                # convert ascii to doubles
+                line_processed = self.process_line(line)
+                D, Dstar = line_processed[0], line_processed[1]
 
-            # save values
-            self.D_pos[:, 0]     = [0, D[0],     D[1],     D[2]]
-            self.D_mom[:, 0]     = [0, D[3],     D[4],     D[5]]
-            self.Dstar_pos[:, 0] = [0, Dstar[0], Dstar[1], Dstar[2]]
-            self.Dstar_mom[:, 0] = [0, Dstar[3], Dstar[4], Dstar[5]]
+                # save values
+                self.D_pos[:, 0]     = [0, D[0],     D[1],     D[2]]
+                self.D_mom[:, 0]     = [0, D[3],     D[4],     D[5]]
+                self.Dstar_pos[:, 0] = [0, Dstar[0], Dstar[1], Dstar[2]]
+                self.Dstar_mom[:, 0] = [0, Dstar[3], Dstar[4], Dstar[5]]
 
-            tree_raw.Fill()
+                tree_raw.Fill()
 
         tree_raw.Write()
         datfile.close()
         return
 
+    # DEPRECATED
+    # OLD PROCESS_LINE FOR PREVIOUS DATA FORMAT 
+    # Parse each line seperating of the .dat file
+    # def process_line(self, line):
+        # # some events are D-Dbar others are D-D*bar
+        # # Here treat them the same 
+        # line_nolabels = line.replace('421\t-421\t', '')
+        # line_nolabels = line_nolabels.replace('421\t-423\t', '')
+
+        # line_split = line_nolabels.split('}\t{')
+        # for i, subline in enumerate(line_split):
+        #     subline_new = subline.replace('{', '')
+        #     subline_new = subline_new.replace('}', '')
+        #     subline_new = subline_new.replace('\n', '')
+        #     line_split[i] = subline_new 
+
+        # D = line_split[0].split(",")
+        # for i, entry in enumerate(D):
+        #     D[i] = float(entry)
+        # Dstar = line_split[1].split(",")
+        # for i, entry in enumerate(Dstar):
+        #     Dstar[i] = float(entry)
+
+        # return [D, Dstar]
+
     # Parse each line seperating of the .dat file
     def process_line(self, line):
-        # some events are D-Dbar others are D-D*bar
-        # Here treat them the same but 
-        # TODO: filter pairs by particle ID
-        line_nolabels = line.replace('421\t-421\t', '')
-        line_nolabels = line_nolabels.replace('421\t-423\t', '')
+        line_split = line.split(',')
 
-        line_split = line_nolabels.split('}\t{')
-        for i, subline in enumerate(line_split):
-            subline_new = subline.replace('{', '')
-            subline_new = subline_new.replace('}', '')
-            subline_new = subline_new.replace('\n', '')
-            line_split[i] = subline_new 
+        D     = [line_split[0], line_split[1], line_split[2], line_split[3], line_split[4],  line_split[5]]
+        Dstar = [line_split[6], line_split[7], line_split[8], line_split[9], line_split[10], line_split[11]]
 
-        D = line_split[0].split(",")
-        for i, entry in enumerate(D):
-            D[i] = float(entry)
-        Dstar = line_split[1].split(",")
-        for i, entry in enumerate(Dstar):
-            Dstar[i] = float(entry)
+        # Convert to floats
+        for i in range(len(D)):
+            D[i]     = float(D[i])
+            Dstar[i] = float(Dstar[i])
 
         return [D, Dstar]
 
