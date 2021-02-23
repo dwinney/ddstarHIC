@@ -18,7 +18,7 @@ except:
 
 def main(argv):
     if len(argv) == 0:
-        s = 2.76E3 
+        s = 2.76E3**2 
     elif len(argv) == 1:
         s = float(argv[0]) 
     else:
