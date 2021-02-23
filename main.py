@@ -5,7 +5,7 @@
 # Email:        dwinney@iu.edu
 # ---------------------------------------------------------------------------
 
-import sys, math
+import sys, os
 from data_file import data_file
 try:
     import ROOT
@@ -18,17 +18,23 @@ except:
 
 def main(argv):
     if len(argv) == 0:
-        print('Usage: lab_kinematics.py <datfile> <CM energy in GeV>')
-        sys.exit(0)
-    elif len(argv) == 1:
-        infilename = argv[0]
         s = 2.76E3 
+    elif len(argv) == 1:
+        s = float(argv[0]) 
     else:
-        infilename = argv[0]
-        s = float(argv[1]) 
+        sys.exit(0)
     
-    outfilename = infilename.replace('.dat', '.root')
-    file = data_file(s, infilename, outfilename)
-    file.close()
+    home_dir = os.getcwd()
+
+    # Grab all .dat files in /data/ folder
+    infiles = []
+    for file in os.listdir(home_dir + "/data"):
+        if file.endswith(".dat"):
+            infiles.append(home_dir + "/data/" + file)
+    
+    # Import all different files into a root file 
+    outfilename = home_dir + "/ddstarpairs.root"
+    datafile = data_file(s, infiles, outfilename)
+    datafile.close()
 
 main(sys.argv[1:])
