@@ -90,35 +90,10 @@ class data_file:
                 self.Dstar_mom[:, 0] = [0, Dstar[3], Dstar[4], Dstar[5]]
 
                 tree_raw.Fill()
+            datfile.close()
 
         tree_raw.Write()
-        datfile.close()
         return
-
-    # DEPRECATED
-    # OLD PROCESS_LINE FOR PREVIOUS DATA FORMAT 
-    # Parse each line seperating of the .dat file
-    # def process_line(self, line):
-        # # some events are D-Dbar others are D-D*bar
-        # # Here treat them the same 
-        # line_nolabels = line.replace('421\t-421\t', '')
-        # line_nolabels = line_nolabels.replace('421\t-423\t', '')
-
-        # line_split = line_nolabels.split('}\t{')
-        # for i, subline in enumerate(line_split):
-        #     subline_new = subline.replace('{', '')
-        #     subline_new = subline_new.replace('}', '')
-        #     subline_new = subline_new.replace('\n', '')
-        #     line_split[i] = subline_new 
-
-        # D = line_split[0].split(",")
-        # for i, entry in enumerate(D):
-        #     D[i] = float(entry)
-        # Dstar = line_split[1].split(",")
-        # for i, entry in enumerate(Dstar):
-        #     Dstar[i] = float(entry)
-
-        # return [D, Dstar]
 
     # Parse each line seperating of the .dat file
     def process_line(self, line):
